@@ -3,9 +3,10 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Layout from './components/layout/Layout';
 import AdvertsPage from './pages/anuncios/AnunciosPage';
-//import LoginPage from './pages/anuncios/AnuncioPage/LoginPage';
+import AdvertPage from './pages/anuncios/AnuncioPage/AdvertPage';
+import NewAdvertPage from './pages/anuncios/NewAdvertPage/NewAdvertPage';
 
-//import RequireAuth from './pages/auth/components/RequireAuth';
+import RequireAuth from './pages/auth/components/RequireAuth';
 
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 
@@ -22,15 +23,15 @@ function App() {
       />
        <Route path="/adverts" element={<Layout />}>
         <Route index element={<AdvertsPage />} />
-
-        {/* <Route
+        <Route path=":advertId" element={<AdvertPage />} />
+         <Route
           path="new"
           element={
             <RequireAuth>
-              <NewTweetPage />
+              <NewAdvertPage />
             </RequireAuth>
           }
-        /> */}
+        />  
       </Route>  
       <Route path="/" element={<Navigate to="/adverts" />} />
       <Route path="/404" element={<div>404 | Not found</div>} />

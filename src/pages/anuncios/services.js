@@ -12,3 +12,9 @@ export const getLatestAnuncios = () => {
     const url = `${anunciosUrl}/${advertId}`;
     return client.get(url);
   };
+
+
+export const createAdvert = advert => {
+  const url = anunciosUrl;
+  return client.post(url, advert);
+};

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getLatestAnuncios } from '../services'; // Supongamos que existe una función fetchAdverts para obtener anuncios
+import { getLatestAnuncios } from '../services';
 import Advert from '../components/Advert';
+
 const AdvertsPage = () => {
   const [adverts, setAdverts] = useState([]);
   const [filteredAdverts, setFilteredAdverts] = useState([]);
@@ -12,63 +13,91 @@ const AdvertsPage = () => {
     tags: [],
   });
 
-
-
   useEffect(() => {
-    getLatestAnuncios().then(adverts => {
-      setAdverts(() => {
-        return adverts;
-      });
+    getLatestAnuncios().then((adverts) => {
+      setAdverts(adverts);
       setFilteredAdverts(adverts);
     });
-  }, [adverts]);
+  }, []);
 
   const applyFilters = () => {
     let filtered = adverts.filter((advert) => {
-      // Aplicar filtros sobre los anuncios
-      // Utiliza los filtros en 'filters' para filtrar los anuncios
+      let matchesFilters = true;
+
+      if (filters.name && !advert.name.toLowerCase().includes(filters.name.toLowerCase())) {
+        matchesFilters = false;
+      }
+
+      if (filters.sale && advert.sale !== filters.sale) {
+        matchesFilters = false;
+      }
+
+      if (filters.price && advert.price > filters.price) {
+        matchesFilters = false;
+      }
+
+      if (filters.tags.length > 0) {
+        const advertTags = advert.tags.map((tag) => tag.toLowerCase());
+        const filterTags = filters.tags.map((tag) => tag.toLowerCase());
+        if (!filterTags.every((tag) => advertTags.includes(tag))) {
+          matchesFilters = false;
+        }
+      }
+
+      return matchesFilters;
     });
+
     setFilteredAdverts(filtered);
   };
 
   const handleFilterChange = (e) => {
-    // Actualiza el estado de los filtros al cambiar los inputs del formulario
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
 
-  const handleApplyFilters = () => {
+  const handleTagChange = (e) => {
+    const { name, options } = e.target;
+    const selectedTags = Array.from(options)
+      .filter((option) => option.selected)
+      .map((option) => option.value);
+
+    setFilters((prevFilters) => ({ ...prevFilters, [name]: selectedTags }));
+  };
+
+  const handleApplyFilters = (e) => {
+    e.preventDefault();
     applyFilters();
   };
 
   return (
     <div>
       <h1>Adverts</h1>
-      <form>
-        {/* Implementa los inputs para los filtros según las especificaciones */}
+      <form onSubmit={handleApplyFilters}>
+        <input type="text" name="name" placeholder="Filter by name" onChange={handleFilterChange} />
+        <select name="sale" onChange={handleFilterChange}>
+          <option value="">Filter by sale</option>
+          <option value="true">Sale</option>
+          <option value="false">Purchase</option>
+        </select>
+        <input type="number" name="price" placeholder="Filter by price" onChange={handleFilterChange} />
+        <select name="tags" multiple onChange={handleTagChange}>
+          {/* Fetch available tags and map through them to create options */}
+          {/* Example: */}
+          {/* {availableTags.map((tag) => (
+            <option key={tag.id} value={tag.name}>
+              {tag.name}
+            </option>
+          ))} */}
+        </select>
+        <button type="submit">Apply Filters</button>
       </form>
-      <div>
-        {/* Muestra la lista de anuncios */}
-        {filteredAdverts.length > 0 ? (
-          filteredAdverts.map((advert) => (
-            <div key={advert.id}>
-              <h3>{advert.name}</h3>
-              <p>Precio: {advert.price}</p>
-              <p>Tipo: {advert.sale ? 'Venta' : 'Compra'}</p>
-              <p>Tags: {advert.tags.join(', ')}</p>
-              {/* Enlace al detalle del anuncio */}
-              <a href={`/adverts/${advert.id}`}>Ver detalles</a>
-            </div>
-          ))
-        ) : (
-          <p>No hay anuncios disponibles.</p>
-        )}
-      </div>
-     
+
       <div className="tweetsPage">
         {filteredAdverts.length ? (
           <ul>
-            {adverts.map(({ id, ...advert }) => (
+            {filteredAdverts.map(({ id, ...advert }) => (
               <li key={id}>
-                <Link to={`${id}`}>
+                <Link to={`/adverts/${id}`}>
                   <Advert {...advert} />
                 </Link>
               </li>

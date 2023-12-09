@@ -60,7 +60,7 @@ function LoginPage() {
 
   return (
     <div className="loginPage">
-      <h1 className="loginPage-title">Log in to Twitter</h1>
+      <h1 className="loginPage-title">Log in to Advert</h1>
       <form onSubmit={handleSubmit}>
         <FormField
           type="text"

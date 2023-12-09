@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router';
 import Content from '../../../components/layout/Content';
 import { useEffect, useState } from 'react';
-import { getAdvert } from '../service';
+import { getAdvert } from '../services';
 
 function AdvertPage() {
   const params = useParams();
