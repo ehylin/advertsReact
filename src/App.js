@@ -1,24 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import { Suspense, lazy } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+
+import Layout from './components/layout/Layout';
+import AdvertsPage from './pages/anuncios/AnunciosPage';
+//import LoginPage from './pages/anuncios/AnuncioPage/LoginPage';
+
+//import RequireAuth from './pages/auth/components/RequireAuth';
+
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      <Route
+        path="/login"
+        element={
+          <Suspense fallback={<div>Loading...</div>}>
+            <LoginPage />
+          </Suspense>
+        }
+      />
+       <Route path="/adverts" element={<Layout />}>
+        <Route index element={<AdvertsPage />} />
+
+        {/* <Route
+          path="new"
+          element={
+            <RequireAuth>
+              <NewTweetPage />
+            </RequireAuth>
+          }
+        /> */}
+      </Route>  
+      <Route path="/" element={<Navigate to="/adverts" />} />
+      <Route path="/404" element={<div>404 | Not found</div>} />
+      <Route path="*" element={<Navigate to="/404" />} />
+    </Routes>
   );
 }
 
